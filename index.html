@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What's Your Cleaning Profile? | Mood</title>
+<style>
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 16px;
+  box-sizing: border-box;
+}
+* { box-sizing: border-box; }
+ 
+.card {
+  background: #fff;
+  border-radius: 16px;
+  max-width: 480px;
+  width: 100%;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(27,58,47,0.10);
+}
+.card-header {
+  background: #1B3A2F;
+  padding: 28px 28px 24px;
+  text-align: center;
+}
+.card-header h2 {
+  color: #fff;
+  font-size: 1.3rem;
+  font-weight: 700;
+  line-height: 1.3;
+  margin: 0 0 6px;
+}
+.card-header p {
+  color: rgba(255,255,255,0.72);
+  font-size: 0.85rem;
+  margin: 0;
+}
+.progress-bar {
+  height: 4px;
+  background: rgba(27,58,47,0.10);
+}
+.progress-fill {
+  height: 100%;
+  background: #D4A04A;
+  border-radius: 2px;
+  transition: width 0.4s ease;
+  width: 0%;
+}
+.card-body {
+  padding: 28px;
+}
+.step-dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #D8E6DF;
+  transition: background 0.2s;
+}
+.dot.active { background: #1B3A2F; }
+.q-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #7A8B82;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.q-text {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1B3A2F;
+  margin-bottom: 20px;
+  line-height: 1.4;
+}
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.opt-btn {
+  background: #F8F6F2;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  padding: 14px 18px;
+  text-align: left;
+  font-size: 0.92rem;
+  color: #1B3A2F;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  font-family: inherit;
+  line-height: 1.3;
+  width: 100%;
+}
+.opt-btn:hover {
+  background: #EFF5F1;
+  border-color: #1B3A2F;
+}
+.opt-btn.selected {
+  background: #EFF5F1;
+  border-color: #1B3A2F;
+}
+.result-wrap { text-align: center; padding: 4px 0 8px; }
+.result-badge {
+  display: inline-block;
+  background: #1B3A2F;
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+}
+.result-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1B3A2F;
+  margin-bottom: 10px;
+  line-height: 1.3;
+}
+.result-desc {
+  font-size: 0.9rem;
+  color: #4A5D53;
+  line-height: 1.6;
+  margin-bottom: 22px;
+}
+.schedule-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 24px;
+  text-align: left;
+}
+.sched-row {
+  background: #F8F6F2;
+  border-radius: 10px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.sched-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #1B3A2F;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 13px;
+  color: #fff;
+  font-weight: 700;
+}
+.sched-info p {
+  font-size: 0.72rem;
+  color: #7A8B82;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+  margin: 0 0 3px;
+}
+.sched-info span {
+  font-size: 0.88rem;
+  color: #1B3A2F;
+  font-weight: 500;
+}
+.restart-btn {
+  background: #1B3A2F;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 28px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.18s;
+  width: 100%;
+}
+.restart-btn:hover { background: #2C5E47; }
+ 
+@media (max-width: 520px) {
+  body { padding: 12px; }
+  .card-header { padding: 22px 20px 18px; }
+  .card-body { padding: 22px 20px; }
+  .card-header h2 { font-size: 1.15rem; }
+}
+</style>
+</head>
+<body>
+ 
+<div class="card">
+  <div class="card-header">
+    <h2>What's Your Cleaning Profile?</h2>
+    <p>3 quick questions to build your personal rig maintenance schedule</p>
+  </div>
+  <div class="progress-bar">
+    <div class="progress-fill" id="prog"></div>
+  </div>
+  <div class="card-body" id="card-body">
+    <div class="step-dots" id="dots">
+      <div class="dot active" id="d0"></div>
+      <div class="dot" id="d1"></div>
+      <div class="dot" id="d2"></div>
+    </div>
+    <div class="q-label" id="q-label"></div>
+    <div class="q-text" id="q-text"></div>
+    <div class="options" id="opts"></div>
+  </div>
+</div>
+ 
+<script>
+(function () {
+  var questions = [
+    {
+      q: "How often do you dab?",
+      opts: [
+        { t: "Daily — it's part of my routine", v: "daily" },
+        { t: "A few times a week", v: "regular" },
+        { t: "Weekends only or less", v: "casual" }
+      ]
+    },
+    {
+      q: "Do you share your rig with others?",
+      opts: [
+        { t: "No, solo sessions only", v: "solo" },
+        { t: "Sometimes — friends, gatherings", v: "shared" },
+        { t: "Often, it's a communal piece", v: "communal" }
+      ]
+    },
+    {
+      q: "Do you use a reclaim catcher?",
+      opts: [
+        { t: "Yes, always", v: "yes" },
+        { t: "No, but I want to start", v: "no" },
+        { t: "What's a reclaim catcher?", v: "new" }
+      ]
+    }
+  ];
+ 
+  var results = {
+    tight: {
+      badge: "Heavy Hitter",
+      title: "Daily Deep-Clean Routine",
+      desc: "Your usage level means buildup happens fast. A disciplined daily routine is the key to keeping flavor clean and your equipment lasting for the long run.",
+      sched: [
+        { icon: "D", label: "Daily", text: "Dump and replace water, Q-tip swab the banger after every session" },
+        { icon: "W", label: "Weekly", text: "Full IPA and salt shake, carb cap and dab tool clean" },
+        { icon: "M", label: "Monthly", text: "Extended soak, percolator scrub, inspect all components" }
+      ]
+    },
+    moderate: {
+      badge: "Regular Dabber",
+      title: "Balanced Maintenance Routine",
+      desc: "Your setup responds well to a consistent weekly clean. Stay on top of the post-session banger swab and you'll rarely need an intensive deep clean.",
+      sched: [
+        { icon: "D", label: "After Each Session", text: "Banger Q-tip swab and a fresh water change" },
+        { icon: "W", label: "Weekly", text: "Full IPA and salt clean, tools and carb cap included" },
+        { icon: "M", label: "Monthly", text: "Full soak and component inspection" }
+      ]
+    },
+    light: {
+      badge: "Casual Enjoyer",
+      title: "Low-Maintenance Routine",
+      desc: "Occasional use means buildup is slower, but fresh water every session is still essential. A thorough weekly clean keeps things pristine even between lighter stretches.",
+      sched: [
+        { icon: "D", label: "Every Session", text: "Fresh water and banger swab — no exceptions" },
+        { icon: "W", label: "Weekly", text: "IPA and salt clean, even during lighter-use weeks" },
+        { icon: "M", label: "Monthly", text: "Full soak and seal check on all connections" }
+      ]
+    }
+  };
+ 
+  var step = 0;
+  var answers = [];
+ 
+  function getResult() {
+    var f = answers[0];
+    if (f === "daily") return results.tight;
+    if (f === "regular") return results.moderate;
+    return results.light;
+  }
+ 
+  function notifyResize() {
+    setTimeout(function () {
+      try {
+        window.parent.postMessage(
+          { type: "iframe-resize", height: document.body.scrollHeight },
+          "*"
+        );
+      } catch (e) {}
+    }, 60);
+  }
+ 
+  function render() {
+    var prog = Math.round((step / questions.length) * 100);
+    document.getElementById("prog").style.width = prog + "%";
+ 
+    for (var i = 0; i < 3; i++) {
+      document.getElementById("d" + i).className = "dot" + (i < step ? " active" : "");
+    }
+ 
+    if (step < questions.length) {
+      var q = questions[step];
+      document.getElementById("q-label").textContent =
+        "Question " + (step + 1) + " of " + questions.length;
+      document.getElementById("q-text").textContent = q.q;
+ 
+      var optsEl = document.getElementById("opts");
+      optsEl.innerHTML = "";
+ 
+      q.opts.forEach(function (o) {
+        var b = document.createElement("button");
+        b.className = "opt-btn";
+        b.textContent = o.t;
+        b.setAttribute("type", "button");
+        b.onclick = (function (val, btn) {
+          return function () {
+            document.querySelectorAll(".opt-btn").forEach(function (x) {
+              x.className = "opt-btn";
+            });
+            btn.className = "opt-btn selected";
+            answers[step] = val;
+            setTimeout(function () {
+              step++;
+              if (step < questions.length) {
+                render();
+              } else {
+                showResult();
+              }
+            }, 280);
+          };
+        })(o.v, b);
+        optsEl.appendChild(b);
+      });
+ 
+      notifyResize();
+    }
+  }
+ 
+  function showResult() {
+    document.getElementById("prog").style.width = "100%";
+ 
+    var r = getResult();
+    var rows = r.sched
+      .map(function (s) {
+        return (
+          '<div class="sched-row">' +
+          '<div class="sched-icon">' + s.icon + "</div>" +
+          '<div class="sched-info"><p>' + s.label + "</p><span>" + s.text + "</span></div>" +
+          "</div>"
+        );
+      })
+      .join("");
+ 
+    var body = document.getElementById("card-body");
+    body.innerHTML =
+      '<div class="result-wrap">' +
+      '<div class="result-badge">' + r.badge + "</div>" +
+      '<div class="result-title">' + r.title + "</div>" +
+      '<div class="result-desc">' + r.desc + "</div>" +
+      '<div class="schedule-grid">' + rows + "</div>" +
+      '<button class="restart-btn" id="restart" type="button">Try Again</button>' +
+      "</div>";
+ 
+    document.getElementById("restart").onclick = function () {
+      step = 0;
+      answers = [];
+      body.innerHTML =
+        '<div class="step-dots" id="dots">' +
+        '<div class="dot active" id="d0"></div>' +
+        '<div class="dot" id="d1"></div>' +
+        '<div class="dot" id="d2"></div>' +
+        "</div>" +
+        '<div class="q-label" id="q-label"></div>' +
+        '<div class="q-text" id="q-text"></div>' +
+        '<div class="options" id="opts"></div>';
+      render();
+    };
+ 
+    notifyResize();
+  }
+ 
+  render();
+ 
+  if (typeof ResizeObserver !== "undefined") {
+    new ResizeObserver(notifyResize).observe(document.body);
+  }
+})();
+</script>
+ 
+</body>
+</html>
